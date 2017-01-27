@@ -54,24 +54,29 @@ view: inventory_items {
   measure:  total_cost {
     type: sum
     sql:  ${cost} ;;
+    value_format_name: "usd"
   }
   measure:  avg_cost {
     type:  average
     sql:  ${cost} ;;
+    value_format_name: "usd"
   }
 
   measure: total_gross_margin {
     type: number
     sql:  ${order_items.total_revenue} - ${total_cost} ;;
+    value_format_name: "usd"
   }
 
   measure:  average_gross_margin {
     type:  number
     sql: ${order_items.avg_sale_price} - ${avg_cost} ;;
+    value_format_name: "usd"
   }
 
   measure:  gross_margin_percent {
     type: number
     sql: ${total_gross_margin}/${order_items.total_revenue} ;;
+    value_format_name: "percent_2"
   }
 }
