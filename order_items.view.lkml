@@ -33,6 +33,11 @@ view: order_items {
     sql: ${TABLE}.returned_at ;;
   }
 
+  dimension: is_returned {
+    type:  yesno
+    sql: ${returned_raw} IS NOT NULL ;;
+  }
+
   dimension: sale_price {
     type: number
     sql: ${TABLE}.sale_price ;;
@@ -41,5 +46,65 @@ view: order_items {
   measure: count {
     type: count
     drill_fields: [id, orders.id, inventory_items.id]
+  }
+
+  measure:  total_sale_price  {
+    type:  sum
+    sql:  ${sale_price} ;;
+  }
+
+  measure: avg_sale_price {
+    type:  average
+    sql:  ${sale_price} ;;
+  }
+
+  measure:  cum_total_sales {
+    type: running_total
+    sql:  ${sale_price} ;;
+  }
+
+  measure:  total_revenue {
+    type:  sum
+    sql:  ${sale_price} ;;
+    filters: {
+      field:  is_returned
+      value: "no"
+    }
+    filters: {
+      field:  orders.is_cancelled
+      value: "no"
+    }
+  }
+
+  measure:  returned_order_count {
+    type:  count
+    filters: {
+      field: is_returned
+      value: "yes"
+    }
+  }
+
+  measure:  item_return_rate {
+    type: number
+    sql: ${returned_order_count}/${count} ;;
+  }
+
+  measure: number_of_customers_returning_items {
+    type: count_distinct
+    sql: ${users.id} ;;
+    filters: {
+      field:  is_returned
+      value: "yes"
+    }
+  }
+
+  measure: percent_of_users_with_returns {
+    type: number
+    sql: ${number_of_customers_returning_items}/${users.id} ;;
+  }
+
+  measure:average_spend_per_user {
+    type: number
+    sql: ${total_sale_price}/${users.count} ;;
   }
 }

@@ -50,4 +50,28 @@ view: inventory_items {
     type: count
     drill_fields: [id, products.id, products.item_name, order_items.count]
   }
+
+  measure:  total_cost {
+    type: sum
+    sql:  ${cost} ;;
+  }
+  measure:  avg_cost {
+    type:  average
+    sql:  ${cost} ;;
+  }
+
+  measure: total_gross_margin {
+    type: number
+    sql:  ${order_items.total_revenue} - ${total_cost} ;;
+  }
+
+  measure:  average_gross_margin {
+    type:  number
+    sql: ${order_items.avg_sale_price} - ${avg_cost} ;;
+  }
+
+  measure:  gross_margin_percent {
+    type: number
+    sql: ${total_gross_margin}/${order_items.total_revenue} ;;
+  }
 }

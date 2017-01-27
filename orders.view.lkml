@@ -26,6 +26,11 @@ view: orders {
     sql: ${TABLE}.status ;;
   }
 
+  dimension: is_cancelled {
+    type:  yesno
+    sql: ${status} = 'cancelled' ;;
+  }
+
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
