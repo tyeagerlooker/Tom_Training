@@ -15,10 +15,16 @@ view: orders {
       date,
       week,
       month,
+      month_name,
       quarter,
       year
     ]
     sql: ${TABLE}.created_at ;;
+  }
+
+  dimension: months_since_signup_order {
+    type: number
+    sql: DATEDIFF('month', ${users.created_date},${created_date}) ;;
   }
 
   dimension: status {
@@ -45,5 +51,17 @@ view: orders {
   measure: count {
     type: count
     drill_fields: [id, users.id, users.first_name, users.last_name, order_items.count]
+  }
+
+  measure:  nonactive_count {
+    type: count
+    filters: {
+      field: user_order_date_rank.is_repeat_user
+      value: "no"
+    }
+  }
+
+  measure: average_lifetime_users {
+    type: average
   }
 }

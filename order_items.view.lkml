@@ -63,12 +63,26 @@ view: order_items {
 
   measure:  cum_total_sales {
     type: running_total
-    sql:  ${sale_price} ;;
+    sql:  ${total_sale_price} ;;
     value_format_name: "usd"
   }
 
   measure:  total_revenue {
     type:  sum
+    sql:  ${sale_price} ;;
+    filters: {
+      field:  is_returned
+      value: "no"
+    }
+    filters: {
+      field:  orders.is_cancelled
+      value: "no"
+    }
+    value_format_name: "usd"
+  }
+
+  measure: average_lifetime_revenue {
+    type: average
     sql:  ${sale_price} ;;
     filters: {
       field:  is_returned
@@ -92,6 +106,7 @@ view: order_items {
   measure:  item_return_rate {
     type: number
     sql: ${returned_order_count}/${count} ;;
+    value_format_name: "decimal_4"
   }
 
   measure: number_of_customers_returning_items {
@@ -101,13 +116,30 @@ view: order_items {
       field:  is_returned
       value: "yes"
     }
-    value_format_name: "usd"
+  }
+
+  measure: number_of_customers_returning_items_all {
+    type: count_distinct
+    sql: ${users.id} ;;
+    filters: {
+      field:  is_returned
+      value: "yes, no"
+    }
+  }
+
+  measure: number_of_customers_returning_items_no {
+    type: count_distinct
+    sql: ${users.id} ;;
+    filters: {
+      field:  is_returned
+      value: "no"
+    }
   }
 
   measure: percent_of_users_with_returns {
     type: number
-    sql: ${number_of_customers_returning_items}/${users.id} ;;
-    value_format_name: "percent_2"
+    sql: ${number_of_customers_returning_items}/${users.count} ;;
+    value_format_name: "percent_4"
   }
 
   measure:average_spend_per_user {

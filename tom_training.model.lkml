@@ -14,7 +14,12 @@ include: "*.dashboard"
 #   }
 # }
 
+map_layer: us_states_1 {
+  url: "https://raw.githubusercontent.com/jgoodall/us-maps/master/topojson/state.topo.json"
+}
+
 explore: order_items {
+  fields: [ALL_FIELDS*, -user_order_date_rank.user_id]
   join: orders {
     type: left_outer
     sql_on: ${order_items.order_id} = ${orders.id} ;;
@@ -38,6 +43,26 @@ explore: order_items {
     sql_on: ${inventory_items.product_id} = ${products.id} ;;
     relationship: many_to_one
   }
+
+  join: user_order_date_rank {
+    type: left_outer
+    sql_on: ${orders.id} = ${user_order_date_rank.order_id} ;;
+    relationship: one_to_one
+    view_label: "User Order Fact"
+  }
+
+  join: user_order_fact {
+    type: left_outer
+    sql_on: ${users.id} = ${user_order_fact.user_id} ;;
+    relationship: one_to_one
+  }
+
+  join: retention_cohort_analysis {
+    type: left_outer
+    sql_on: ${users.id} = ${retention_cohort_analysis.user_id};;
+    relationship: one_to_many
+  }
+
 }
 
 # explore: orders {
